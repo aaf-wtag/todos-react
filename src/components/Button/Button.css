@@ -19,3 +19,12 @@
   line-height: 42px;
   color: #7a8dfd;
 }
+
+.buttonIcon {
+  width: 24px;
+  height: 24px;
+  position: absolute;
+  margin-left: 28%;
+  background-color: #fff;
+  border: none;
+}
