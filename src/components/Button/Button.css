@@ -1,0 +1,21 @@
+.headerTitle {
+  display: inline-flex;
+  align-items: center;
+  border: none;
+  background-color: #fff;
+}
+
+.headerTitleImage {
+  width: 30px;
+  height: 30px;
+  margin-right: 14px;
+}
+
+.headerTitleText {
+  width: 99px;
+  height: 42px;
+  font-weight: 700;
+  font-size: 36px;
+  line-height: 42px;
+  color: #7a8dfd;
+}
