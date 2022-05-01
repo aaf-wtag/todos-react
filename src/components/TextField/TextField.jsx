@@ -1,10 +1,13 @@
 import React from 'react';
 
-const TextField = () => {
+const TextField = ({className, searchFieldOn}) => {
   return (
-    <div>
-      
-    </div>
+    <input 
+    className={className}
+    type="text" 
+    display={searchFieldOn ? "inline-flex" : "none"}
+    placeholder="What are you looking for?"
+    />
   )
 };
 
