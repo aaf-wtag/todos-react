@@ -2,7 +2,8 @@ import { useState } from 'react';
 import React from 'react';
 import Button from '../Button';
 import TextField from '../TextField';
-import todosLogo from '/Users/akib.fahad/Desktop/todo-list-app/src/images/todos_logo.svg';
+import todosLogo from '../../images/todos_logo.svg';
+import searchIcon from '../../images/search.svg';
 
 const Header = () => {
   const [searchFieldOn, setSearchFieldOn] = useState(false);
@@ -18,16 +19,21 @@ const Header = () => {
         textClass="headerTitleText"
       />
 
-      { searchFieldOn && (
-        <TextField 
-          className='searchField'
+      <div className='searchContainer'>
+        { searchFieldOn && (
+          <TextField 
+            className='searchField'
+            searchFieldOn={searchFieldOn}
+          />
+        )}
+
+        <Button 
+          className="buttonIcon"
+          imageSrc={searchIcon}  
+          imageAlt="Search Button"
+          onClick = {() => setSearchFieldOn(!searchFieldOn)}
         />
-      )}
-
-      <Button 
-        className="search"
-      />
-
+      </div>
     </header>
   )
 };

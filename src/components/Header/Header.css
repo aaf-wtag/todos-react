@@ -8,3 +8,10 @@
   justify-content: space-evenly;
   gap: 39%;
 }
+
+.searchContainer {
+  display: inline-flex;
+  height: 100%;
+  width: 560px;
+  align-items: center;
+}
