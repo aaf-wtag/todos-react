@@ -32,6 +32,10 @@ function App() {
       { showMainScreen && (
         <div className='mainScreen'>
           <Header />
+          <div className="toastContainer">
+          </div>
+            <TodoCardsContainer />
+            <Footer />
         </div>
       )}
 
