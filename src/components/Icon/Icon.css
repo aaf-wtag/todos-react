@@ -1,0 +1,13 @@
+.splashText {
+  font-family: Roboto, sans-serif;
+  font-style: normal;
+  font-weight: 700;
+  font-size: 96px;
+  line-height: 112px;
+  color: #7a8dfd;
+}
+
+.splashImage {
+  height: 154px;
+  width: 154px;
+}
