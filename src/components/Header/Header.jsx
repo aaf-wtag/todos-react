@@ -1,12 +1,15 @@
 import { useState } from 'react';
 import React from 'react';
 import Button from '../Button';
-import TextField from '../TextField';
+import SearchField from '../SearchField';
 import todosLogo from '../../images/todos_logo.svg';
 import searchIcon from '../../images/search.svg';
 
-const Header = () => {
-  const [searchFieldOn, setSearchFieldOn] = useState(false);
+const Header = ({searchFieldOn, setSearchFieldOn, searchText, setSearchText}) => {
+  const handleToggleSearchField = () => {
+    setSearchFieldOn(!searchFieldOn);
+    setSearchText('');
+  };
 
   return (
     <header className='header'>
@@ -20,20 +23,20 @@ const Header = () => {
       />
 
       <div className='searchContainer'>
-        { searchFieldOn && (
-          <TextField 
+        {(searchFieldOn && (
+          <SearchField
             className='searchField'
-            displayType={searchFieldOn ? "inline-flex" : "none"}
             placeholder="What are you looking for?"
-            editable={true}
-          />
+            searchText={searchText}
+            setSearchText={setSearchText}
+         />)
         )}
         
         <Button 
           className="searchButton buttonIcon"
           imageSrc={searchIcon}  
           imageAlt="Search Button"
-          onClick = {() => setSearchFieldOn(!searchFieldOn)}
+          onClick = {handleToggleSearchField}
         />
       </div>
     </header>

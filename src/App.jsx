@@ -15,6 +15,7 @@ const App = () => {
   const [toasts, setToasts] = useState([]);
   const [isEmptyCardCreated, setIsEmptyCardCreated] = useState(false);
   const [todos, setTodos] = useState([]);
+  const [searchFieldOn, setSearchFieldOn] = useState(false);
   const [searchText, setSearchText] = useState('');
   const [filterType, setFilterType] = useState('all');
 
@@ -22,16 +23,38 @@ const App = () => {
     const { data, error } = await supabase
         .from('todo_table')
         .select()
-        // .ilike('text', `%${searchText}%`)
+        .ilike('text', `%${searchText}%`)
         .order('created_at', { ascending: false });
     return { data, error };
   }
 
+  const getDataWithCompletionStatus = async (isCompleted) => {
+    const { data, error } = await supabase
+      .from('todo_table')
+      .select()
+      .match({completed : isCompleted})
+      .ilike('text', `%${searchText}%`)
+      .order('created_at', { ascending: false });
+  
+    return {data, error};
+  }
+
   useEffect( async() => { 
-    const { data, error } = await getDataFromDB();     
-    setTodos(prev => data);
-    setHideMainScreen(prev => false);
-  }, []);
+    let dataFromDB;
+    if (filterType === "all")
+      dataFromDB = await getDataFromDB(searchText);
+
+    else if (filterType === "complete")
+      dataFromDB = await getDataWithCompletionStatus(true);
+
+    else if (filterType === "incomplete" )
+      dataFromDB = await getDataWithCompletionStatus(false);  
+    
+    const { data, error } = dataFromDB;
+      
+    setTodos(data);
+    setHideMainScreen(false);
+  }, [searchText, filterType]);
 
   const toastList = toasts
   .map(toast => (
@@ -67,14 +90,16 @@ const App = () => {
   }
 
   const handleAdd = async(newText) => {
-    const { data, error } = await supabase
-    .from('todo_table')
-    .insert([
-        { text: newText, completed: false, saved: true }
-    ]);
-    const newTodo = data[0];
-    setTodos(prev => [newTodo, ...todos]);
-    setIsEmptyCardCreated(prev => false);   
+    if (newText) {
+      const { data, error } = await supabase
+      .from('todo_table')
+      .insert([
+          { text: newText, completed: false, saved: true }
+      ]);
+      const newTodo = data[0];
+      setTodos(prev => [newTodo, ...todos]);
+      setIsEmptyCardCreated(prev => false); 
+    };
   }
 
   const deleteFromDB = async (id) => {
@@ -87,7 +112,8 @@ const App = () => {
 
   const handleDelete = async(id) => {
     const {data , error} = await deleteFromDB(id);
-    const remainingTodos = todos.filter(todo => id !== todo.id);
+    const deletedTodo = data[0];
+    const remainingTodos = todos.filter(todo => deletedTodo.id !== todo.id);
     setTodos(remainingTodos);
   }
 
@@ -120,7 +146,12 @@ const App = () => {
       
       { !hideMainScreen && (
         <div className='mainScreen'>
-          <Header />
+          <Header 
+            searchFieldOn={searchFieldOn} 
+            setSearchFieldOn={setSearchFieldOn}
+            searchText={searchText}
+            setSearchText={setSearchText}
+          />
           <div className="toastContainer">
             <ul className='toastList'>
               {toastList}
@@ -146,19 +177,19 @@ const App = () => {
                   className="allButton"
                   text="All" 
                   textClass="allText" 
-                  // onClick 
+                  onClick={() => setFilterType('all')}
                 />
                 <Button
                   className="incompleteButton"
                   text="Incomplete" 
                   textClass="incompleteText" 
-                  // onClick 
+                  onClick={() => setFilterType('incomplete')}
                 />
                 <Button
                   className="completeButton"
                   text="Complete" 
                   textClass="completeText" 
-                  // onClick 
+                  onClick={() => setFilterType('complete')}
                 />
                 </div>
             </div>  
