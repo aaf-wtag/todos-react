@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 
-const TextField = ({className, displayType, placeholder, editable, text, updateDisplayText, isCompleted}) => {
-  const [textValue, setTextValue] = useState(text? text : '');
+const TextField = ({className, displayType, placeholder, editable, text, updateTextState, isCompleted}) => {
+  const [textValue, setTextValue] = useState(text);
 
   const handleChange = (e) => {
-    setTextValue(prev => e.target.value);
-    updateDisplayText(e.target.value);
+    setTextValue(e.target.value);
+    updateTextState(e.target.value); // not using textValue because it might not change as expected
   } 
 
   return (editable ?  
