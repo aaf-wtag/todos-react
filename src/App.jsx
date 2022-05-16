@@ -66,8 +66,27 @@ const App = () => {
     setTodos(prev => editedTodos);
   }
 
+  const handleAdd = async(newText) => {
+    const { data, error } = await supabase
+    .from('todo_table')
+    .insert([
+        { text: newText, completed: false, saved: true }
+    ]);
+    const newTodo = data[0];
+    setTodos(prev => [newTodo, ...todos]);
+    setIsEmptyCardCreated(prev => false);   
+  }
+
+  const deleteFromDB = async (id) => {
+    const { data, error } = await supabase
+      .from('todo_table')
+      .delete()
+      .match({ id: id });
+    return { data, error };
+  }
+
   const handleDelete = async(id) => {
-    await deleteFromDB(id);
+    const {data , error} = await deleteFromDB(id);
     const remainingTodos = todos.filter(todo => id !== todo.id);
     setTodos(remainingTodos);
   }
@@ -84,24 +103,6 @@ const App = () => {
       />
     )
   )
-
-  const handleAdd = async(newText) => {
-    const { data, error } = await supabase
-    .from('todo_table')
-    .insert([
-        { text: newText, completed: false, saved: true }
-    ]);
-    const newTodo = data[0];
-    setTodos(prev => [newTodo, ...todos]);
-    setIsEmptyCardCreated(prev => false);  
-  }
-
-  const deleteFromDB = async (id) => {
-    const { data, error } = await supabase
-      .from('todo_table')
-      .delete()
-      .match({ id: id });
-  }
 
   return (
     <div className="App">
