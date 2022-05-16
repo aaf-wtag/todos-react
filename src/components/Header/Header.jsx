@@ -23,12 +23,14 @@ const Header = () => {
         { searchFieldOn && (
           <TextField 
             className='searchField'
-            searchFieldOn={searchFieldOn}
+            displayType={searchFieldOn ? "inline-flex" : "none"}
+            placeholder="What are you looking for?"
+            editable={true}
           />
         )}
-
+        
         <Button 
-          className="buttonIcon"
+          className="searchButton buttonIcon"
           imageSrc={searchIcon}  
           imageAlt="Search Button"
           onClick = {() => setSearchFieldOn(!searchFieldOn)}

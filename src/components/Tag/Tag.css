@@ -1,0 +1,47 @@
+.addTaskTag {
+  display: block;
+  font-family: Roboto, sans-serif;
+  font-style: normal;
+  font-weight: 700;
+  font-size: 30px;
+  color: #32394b;
+  margin-bottom: 28px;
+}
+
+.timestamp {
+  display: block;
+  font-family: Roboto, sans-serif;
+  font-style: normal;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 16px;
+  color: #bbbdd0;
+  background: #ffffff;
+  box-sizing: border-box;
+  margin-top: 9px;
+  margin-bottom: 26px;
+}
+
+.durationText {
+  font-family: Roboto, sans-serif;
+  font-size: 12px;
+  color: #ffffff;
+  background: #7a8dfd;
+  border: 1px solid #dde2ff;
+  box-sizing: border-box;
+  border-radius: 5px;
+  width: 140px;
+  height: 29px;
+  padding: 5px 12px;
+}
+
+.completedText {
+  font-family: Roboto, sans-serif;
+  font-size: 20px;
+  color: #0bc375;
+  background: #ffffff;
+  text-decoration: line-through;
+  box-sizing: border-box;
+  width: 351px;
+  height: 80px;
+}

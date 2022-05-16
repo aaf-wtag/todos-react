@@ -1,0 +1,27 @@
+li {
+  list-style: none;
+}
+
+.cardItem {
+  flex: 0 1 23.4%;
+  position: relative;
+  background: #ffffff;
+  border: 1px solid #dde2ff;
+  box-sizing: border-box;
+  border-radius: 5px;
+  padding: 16px;
+}
+
+.cardItemFooter {
+  margin-top: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.todoButtonsContainer {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}

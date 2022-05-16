@@ -9,3 +9,18 @@
   height: 36px;
   margin-right: 14px;
 }
+
+.inputText {
+  width: 100%;
+  font-family: Roboto, sans-serif;
+  font-size: 20px;
+  background: #ffffff;
+  border: 3px solid #dde2ff;
+  border-radius: 5px;
+}
+
+.uneditableText {
+  font-family: Roboto, sans-serif;
+  font-size: 20px;
+  background: #ffffff;
+}

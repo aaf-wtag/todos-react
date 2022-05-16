@@ -20,11 +20,91 @@
   color: #7a8dfd;
 }
 
+.searchButton {
+  position: absolute;
+  margin-left: 28%;
+}
+
 .buttonIcon {
   width: 24px;
   height: 24px;
-  position: absolute;
-  margin-left: 28%;
   background-color: #fff;
   border: none;
+}
+
+.createButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  font-style: bold;
+  font-size: 16px;
+  width: 104px;
+  height: 36px;
+  color: #ffffff;
+  background: #7a8dfd;
+  border: 1px solid #dde2ff;
+  border-radius: 5px;
+}
+
+.allButton {
+  width: 48px;
+  height: 36px;
+  border-radius: 5px;
+  background: #ffffff;
+  align-self: flex-end;
+  border: 1px solid #dde2ff;
+  border-radius: 5px;
+}
+
+.incompleteButton {
+  width: 111px;
+  height: 36px;
+  border-radius: 5px;
+  background: #ffffff;
+  align-self: flex-end;
+  border: 1px solid #dde2ff;
+  border-radius: 5px;
+}
+
+.completeButton {
+  width: 104px;
+  height: 36px;
+  border-radius: 5px;
+  background: #ffffff;
+  align-self: flex-end;
+  border: 1px solid #dde2ff;
+}
+
+.addTaskButton {
+  width: 91px;
+  height: 36px;
+  border-radius: 5px;
+  background: #ffffff;
+  border: 1px solid #dde2ff;
+  border-radius: 5px;
+}
+
+.addTaskText {
+  font-family: Roboto, sans-serif;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 19px;
+  color: #32394b;
+}
+
+.saveButton {
+  display: inline-block;
+  width: 63px;
+  height: 36px;
+  border-radius: 5px;
+  background: #ffffff;
+  border: 1px solid #dde2ff;
+}
+
+.deleteButton,
+.doneButton,
+.editButton {
+  display: inline-block;
 }
