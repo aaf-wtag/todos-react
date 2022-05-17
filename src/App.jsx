@@ -40,7 +40,7 @@ const App = () => {
     return {data, error};
   }
 
-  async function getFilteredData(){
+  const loadTodos = async() => {
     let dataFromDB;
     if (filterType === "all")
       dataFromDB = await getDataFromDB(searchText);
@@ -59,9 +59,7 @@ const App = () => {
   }
 
   useEffect( () => { 
-    getFilteredData()
-    
-    // eslint-disable-next-line
+    loadTodos();
   }, [searchText, filterType]);
 
   const toastList = toasts
