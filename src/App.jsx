@@ -12,12 +12,13 @@ import supabase from "./supabaseClient";
 
 const App = () => {
   const [hideMainScreen, setHideMainScreen] = useState(true);
-  const [toasts, setToasts] = useState([]);
+  const [toasts] = useState([]);
   const [isEmptyCardCreated, setIsEmptyCardCreated] = useState(false);
   const [todos, setTodos] = useState([]);
   const [searchFieldOn, setSearchFieldOn] = useState(false);
   const [searchText, setSearchText] = useState('');
   const [filterType, setFilterType] = useState('all');
+  const [isTodoListEmpty, setIsTodoListEmpty] = useState(true);
 
   const getDataFromDB = async() => {
     const { data, error } = await supabase
@@ -39,7 +40,7 @@ const App = () => {
     return {data, error};
   }
 
-  useEffect( async() => { 
+  async function getFilteredData(){
     let dataFromDB;
     if (filterType === "all")
       dataFromDB = await getDataFromDB(searchText);
@@ -50,10 +51,17 @@ const App = () => {
     else if (filterType === "incomplete" )
       dataFromDB = await getDataWithCompletionStatus(false);  
     
-    const { data, error } = dataFromDB;
+    const { data } = dataFromDB;
       
+    if (data.length > 0) setIsTodoListEmpty(false);
     setTodos(data);
     setHideMainScreen(false);
+  }
+
+  useEffect( () => { 
+    getFilteredData()
+    
+    // eslint-disable-next-line
   }, [searchText, filterType]);
 
   const toastList = toasts
@@ -91,7 +99,7 @@ const App = () => {
 
   const handleAdd = async(newText) => {
     if (newText) {
-      const { data, error } = await supabase
+      const { data } = await supabase
       .from('todo_table')
       .insert([
           { text: newText, completed: false, saved: true }
@@ -111,7 +119,7 @@ const App = () => {
   }
 
   const handleDelete = async(id) => {
-    const {data , error} = await deleteFromDB(id);
+    const {data} = await deleteFromDB(id);
     const deletedTodo = data[0];
     const remainingTodos = todos.filter(todo => deletedTodo.id !== todo.id);
     setTodos(remainingTodos);
@@ -170,7 +178,11 @@ const App = () => {
                 imageClass="createImg" 
                 text="Create" 
                 textClass="createText" 
-                onClick={() => setIsEmptyCardCreated(prev => true)} 
+                onClick={ () => {
+                  setIsEmptyCardCreated(true);
+                  setIsTodoListEmpty(false);
+                  } 
+                }
               />
               <div className='filterButtonsContainer'>
                 <Button
@@ -194,6 +206,12 @@ const App = () => {
                 </div>
             </div>  
             <ul className='todoList'>
+              {isTodoListEmpty && (
+                <Icon 
+
+                />
+              )}
+
               {isEmptyCardCreated && (
                 <TodoCard 
                   cardState={'empty'}
