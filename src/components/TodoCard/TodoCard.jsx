@@ -38,11 +38,11 @@ const TodoCard = ({ todo, cardState, handleAdd, handleDelete,
   }
 
   const updateDisplayText = (updatedText) => {
-    setDisplayText(prev => updatedText);
+    setDisplayText(updatedText);
   } 
 
   const onAdd = () => {
-    setisAddDisabled(prev => true);
+    setisAddDisabled(true);
     handleAdd(displayText.trim());
   }
 
@@ -63,12 +63,15 @@ const TodoCard = ({ todo, cardState, handleAdd, handleDelete,
   }
 
   const handleDone = async() => {
-    await updateCompletedState(todo.id, true);
-    const completionTime = new Date(Date.now());
-    const { data, error } = await updateCompletedAt(todo.id, completionTime);
-    setElapsedTime(prev => calculateElapsedTime(todo.created_at, completionTime));
-
-    updateDataInTodos(data);
+    const updatedState = await updateCompletedState(todo.id, true);
+    if (updatedState.error) console.log(updatedState.error)
+    else {
+      const completionTime = new Date(Date.now());
+      const { data, error } = await updateCompletedAt(todo.id, completionTime);
+      setElapsedTime(prev => calculateElapsedTime(todo.created_at, completionTime));
+  
+      updateDataInTodos(data);
+    }
   }
 
   const updateSavedState = async (id, val) => {
@@ -90,12 +93,16 @@ const TodoCard = ({ todo, cardState, handleAdd, handleDelete,
       .from('todo_table')
       .update({ text: val })
       .match({ id: id });
+    return {data, error};
   }
 
   const handleSave = async() => {
-    await updateText(todo.id, displayText);
-    const { data, error } = await updateSavedState(todo.id, true);
-    updateDataInTodos(data);
+    const updatedState = await updateText(todo.id, displayText);
+    if (updatedState.error) console.log(updatedState.error);
+    else {
+      const { data, error } = await updateSavedState(todo.id, true);
+      updateDataInTodos(data);
+    }
   }
 
   const onDelete = () => {
@@ -111,7 +118,9 @@ const TodoCard = ({ todo, cardState, handleAdd, handleDelete,
        placeholder='What do you want to do?'
        editable={isTextEditable}
        text={todo? todo.text : ''}
-       updateDisplayText={updateDisplayText}
+       updateTextState={updateDisplayText}
+       onAdd={onAdd}
+       handleSave={handleSave}
        isCompleted={todo? todo.completed : false} 
       />
 

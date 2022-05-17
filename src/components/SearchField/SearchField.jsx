@@ -21,6 +21,7 @@ const SearchField = ({ className, placeholder, setSearchText }) => {
     <input 
       className={className}
       placeholder={placeholder}
+      autoFocus
       onChange={handleChange}
     />
   )
