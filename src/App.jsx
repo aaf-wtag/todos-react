@@ -2,23 +2,30 @@ import { useState, useEffect } from 'react';
 import './App.css';
 import todosLogo from './images/todos_logo.svg';
 import createImg from './images/create.svg';
+import emptyImg from './images/empty.svg';
 import Icon from './components/Icon';
 import Header from './components/Header';
 import Toast from './components/Toast';
 import Button from './components/Button';
 import Tag from './components/Tag';
 import TodoCard from './components/TodoCard';
+import Spinner from './components/Spinner';
 import supabase from "./supabaseClient";
 
 const App = () => {
   const [hideMainScreen, setHideMainScreen] = useState(true);
-  const [toasts] = useState([]);
+  const [toasts, setToasts] = useState([]);
   const [isEmptyCardCreated, setIsEmptyCardCreated] = useState(false);
   const [todos, setTodos] = useState([]);
   const [searchFieldOn, setSearchFieldOn] = useState(false);
   const [searchText, setSearchText] = useState('');
   const [filterType, setFilterType] = useState('all');
   const [isTodoListEmpty, setIsTodoListEmpty] = useState(true);
+  const [showMainBodySpinner, setShowMainBodySpinner] = useState(false);
+
+  const dataIncrement = 8;
+  const [numberOfTodosToShow, setNumberOfTodosToShow] = useState({dataShown: dataIncrement});
+  const [loadMorePresent, setLoadMorePresent] = useState(true);
 
   const getDataFromDB = async() => {
     const { data, error } = await supabase
@@ -42,6 +49,8 @@ const App = () => {
 
   const loadTodos = async() => {
     let dataFromDB;
+
+    setShowMainBodySpinner(true);
     if (filterType === "all")
       dataFromDB = await getDataFromDB(searchText);
 
@@ -50,24 +59,48 @@ const App = () => {
 
     else if (filterType === "incomplete" )
       dataFromDB = await getDataWithCompletionStatus(false);  
-    
-    const { data } = dataFromDB;
-      
-    if (data.length > 0) setIsTodoListEmpty(false);
-    setTodos(data);
-    setHideMainScreen(false);
+    setShowMainBodySpinner(false);
+
+    const { data, error } = dataFromDB;
+    if (error) createToast(false);
+    else {
+      createToast(true);
+      if (data.length > 0) setIsTodoListEmpty(false);
+      else setIsTodoListEmpty(true);
+      setTodos(data);
+      setLoadMorePresent(true);
+      setNumberOfTodosToShow({dataShown: dataIncrement});
+      setHideMainScreen(false);
+    }
   }
 
   useEffect( () => { 
     loadTodos();
   }, [searchText, filterType]);
 
+  const createToast = (isDBCallSuccessful) => {
+    const toast = {
+      id: Date.now(),
+      isSuccessful: isDBCallSuccessful,
+    };
+    setToasts([...toasts, toast]);
+    removeToast();
+  };
+
+  const removeToast = () => {
+    setTimeout(() => {
+      const editedToasts = [...toasts];
+      editedToasts.shift();
+      setToasts(editedToasts);
+    }, 2000);
+  };
+
+
   const toastList = toasts
   .map(toast => (
     <Toast 
-      // key ={Date.now()}
-      // toastType={toastType}
-      // isChangeSavedInDB={isChangeSavedInDB}
+      key ={toast.id}
+      isSuccessful={toast.isSuccessful}
     />
   ));
 
@@ -92,19 +125,25 @@ const App = () => {
         return todo;
       }
     );
-    setTodos(prev => editedTodos);
+    setTodos(editedTodos);
   }
 
   const handleAdd = async(newText) => {
     if (newText) {
-      const { data } = await supabase
+      setShowMainBodySpinner(true);
+      const { data, error } = await supabase
       .from('todo_table')
       .insert([
           { text: newText, completed: false, saved: true }
       ]);
-      const newTodo = data[0];
-      setTodos(prev => [newTodo, ...todos]);
-      setIsEmptyCardCreated(prev => false); 
+      setShowMainBodySpinner(false);
+      if (error) createToast(false);
+      else{
+        createToast(true);
+        const newTodo = data[0];
+        setTodos(prev => [newTodo, ...todos]);
+        setIsEmptyCardCreated(false); 
+      }
     };
   }
 
@@ -117,13 +156,19 @@ const App = () => {
   }
 
   const handleDelete = async(id) => {
-    const {data} = await deleteFromDB(id);
-    const deletedTodo = data[0];
-    const remainingTodos = todos.filter(todo => deletedTodo.id !== todo.id);
-    setTodos(remainingTodos);
+    setShowMainBodySpinner(true);
+    const {data, error} = await deleteFromDB(id);
+    setShowMainBodySpinner(false);
+    if (error) createToast(false);
+    else{
+      createToast(true);
+      const deletedTodo = data[0];
+      const remainingTodos = todos.filter(todo => deletedTodo.id !== todo.id);
+      setTodos(remainingTodos);
+    }
   }
 
-  const todoCardsList = todos.map(
+  const todoCardsList = todos.slice(0, numberOfTodosToShow.dataShown).map(
     todo => (
       <TodoCard 
         key = {todo.id}
@@ -132,6 +177,7 @@ const App = () => {
         setTodos = {setTodos}
         updateDataInTodos = {updateDataInTodos}
         handleDelete = {handleDelete}
+        createToast={createToast}
       />
     )
   )
@@ -151,7 +197,7 @@ const App = () => {
       )}
       
       { !hideMainScreen && (
-        <div className='mainScreen'>
+        <div className={`mainScreen`}>
           <Header 
             searchFieldOn={searchFieldOn} 
             setSearchFieldOn={setSearchFieldOn}
@@ -163,7 +209,7 @@ const App = () => {
               {toastList}
             </ul>
           </div>
-          <div className='todoContainer'>
+          <div className={`todoContainer ${showMainBodySpinner && "lowerOpacity"}`}>
             <Tag
               className="addTaskTag"
               text="Add Task"
@@ -206,21 +252,68 @@ const App = () => {
             <ul className='todoList'>
               {isTodoListEmpty && (
                 <Icon 
-
+                  imageSrc={emptyImg}
+                  imageAlt="Empty TodoList Icon" 
+                  text="You didn't add any task. Please, add one."
+                  textClass='emptyTodoText'
+                  isEmptyIcon={isTodoListEmpty}
                 />
               )}
-
               {isEmptyCardCreated && (
                 <TodoCard 
                   cardState={'empty'}
                   handleAdd={handleAdd}
                   handleDelete={handleDelete}
                   setIsEmptyCardCreated={setIsEmptyCardCreated}
+                  createToast={createToast}
                 />
               )}
               {todoCardsList}
             </ul>
+            <footer className='todosDisplayController'>
+              {(loadMorePresent && !isTodoListEmpty) && (
+                <Button 
+                  className='loadMore'
+                  text='Load More'
+                  textClass='loadMoreText'
+                  onClick={ () => {
+                    if (numberOfTodosToShow.dataShown < todos.length){
+                      if ((numberOfTodosToShow.dataShown + dataIncrement) < todos.length)
+                        setNumberOfTodosToShow({dataShown: numberOfTodosToShow.dataShown + dataIncrement});
+                      else {
+                        setNumberOfTodosToShow({dataShown: todos.length});
+                        setLoadMorePresent(false);
+                      };
+                    }
+                    else setLoadMorePresent(false);
+                  }}
+                />
+              )}
+              {(!loadMorePresent && !isTodoListEmpty) && (
+                <Button 
+                  className='seeLess'
+                  text='See Less'
+                  textClass='seeLessText'
+                  onClick={ () => {
+                    if (numberOfTodosToShow.dataShown > dataIncrement) {
+                      if ((numberOfTodosToShow.dataShown - dataIncrement) > dataIncrement)
+                        setNumberOfTodosToShow({dataShown: numberOfTodosToShow.dataShown - dataIncrement});
+                      else {
+                        setNumberOfTodosToShow({dataShown: dataIncrement});
+                        setLoadMorePresent(true);    
+                      }
+                    }
+                    else setLoadMorePresent(true);
+                  }}
+                />
+              )}
+            </footer>
           </div>
+          {showMainBodySpinner && (
+              <Spinner 
+                className='mainSpinnerContainer'
+              />
+            )}
         </div>
       )}
     </div>

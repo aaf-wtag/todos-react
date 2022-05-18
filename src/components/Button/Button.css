@@ -108,3 +108,18 @@
 .editButton {
   display: inline-block;
 }
+
+.loadMore,
+.seeLess {
+  margin-top: 57px;
+  width: 150px;
+  height: 36px;
+  background-color: #32394b;
+  border: 1px solid #dde2ff;
+  border-radius: 5px;
+  font-family: Roboto;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 16px;
+  color: #ffffff;
+}

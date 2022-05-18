@@ -7,3 +7,27 @@
   border-radius: 5px;
   margin-bottom: 8px;
 }
+
+.toastSuccess {
+  background: #0bc375;
+}
+
+.toastFail {
+  background: #e85f5f;
+}
+
+.animateToast {
+  animation: toastAnimation 0.3s linear;
+}
+
+@keyframes toastAnimation {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0px);
+  }
+}
