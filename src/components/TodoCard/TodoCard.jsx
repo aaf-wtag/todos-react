@@ -7,15 +7,17 @@ import deleteImg from '../../images/delete.svg';
 import doneImg from '../../images/done.svg';
 import editImg from '../../images/edit.svg';
 import supabase from '../../supabaseClient';
+import Spinner from '../Spinner';
 
 
 const TodoCard = ({ todo, cardState, handleAdd, handleDelete, 
-  updateDataInTodos, setIsEmptyCardCreated}) => {
+  updateDataInTodos, setIsEmptyCardCreated, createToast}) => {
   const isTextEditable = (cardState === 'empty' || cardState === 'editing');
   const textClass = (isTextEditable) ? 'inputText' : 'uneditableText';
   
   const [isAddDisabled, setisAddDisabled] = useState(false);
   const [displayText, setDisplayText] = useState(todo ? todo.text : '');
+  const [showCardSpinner, setShowCardSpinner] = useState(false);
   
   const calculateElapsedTime = (startDateString, endDate) => {
     if (!endDate) return -1;
@@ -63,15 +65,23 @@ const TodoCard = ({ todo, cardState, handleAdd, handleDelete,
   }
 
   const handleDone = async() => {
+    setShowCardSpinner(true);
     const updatedState = await updateCompletedState(todo.id, true);
-    if (updatedState.error) console.log(updatedState.error)
+    if (updatedState.error) {
+      createToast(false);
+    }
     else {
+      createToast(true);
       const completionTime = new Date(Date.now());
       const { data, error } = await updateCompletedAt(todo.id, completionTime);
-      setElapsedTime(prev => calculateElapsedTime(todo.created_at, completionTime));
-  
-      updateDataInTodos(data);
+      if (error) createToast(false);
+      else {
+        createToast(true);
+        setElapsedTime(prev => calculateElapsedTime(todo.created_at, completionTime));
+        updateDataInTodos(data);
+      }
     }
+    setShowCardSpinner(false);
   }
 
   const updateSavedState = async (id, val) => {
@@ -84,8 +94,14 @@ const TodoCard = ({ todo, cardState, handleAdd, handleDelete,
   }
 
   const handleEdit = async() => {
+    setShowCardSpinner(true);
     const {data, error} = await updateSavedState(todo.id, false);
-    updateDataInTodos(data);
+    if (error) createToast(false);
+    else {
+      createToast(true);
+      updateDataInTodos(data);
+    }
+    setShowCardSpinner(false);
   }
 
   const updateText = async (id, val) => {
@@ -97,12 +113,19 @@ const TodoCard = ({ todo, cardState, handleAdd, handleDelete,
   }
 
   const handleSave = async() => {
+    setShowCardSpinner(true);
     const updatedState = await updateText(todo.id, displayText);
-    if (updatedState.error) console.log(updatedState.error);
+    if (updatedState.error) createToast(false);
     else {
+      createToast(true);
       const { data, error } = await updateSavedState(todo.id, true);
-      updateDataInTodos(data);
+      if (error) createToast(false);
+      else {
+        createToast(true);
+        updateDataInTodos(data);
+      }
     }
+    setShowCardSpinner(false);
   }
 
   const onDelete = () => {
@@ -111,17 +134,20 @@ const TodoCard = ({ todo, cardState, handleAdd, handleDelete,
   }
 
   return (
-    <li className='cardItem'>
+    <li className={`cardItem ${showCardSpinner && "lowerOpacity"}`}>
+      {showCardSpinner && (
+        <Spinner className='cardSpinnerContainer'/>
+      )}
       <TextField 
-       className={textClass}
-       displayType='block'
-       placeholder='What do you want to do?'
-       editable={isTextEditable}
-       text={todo? todo.text : ''}
-       updateTextState={updateDisplayText}
-       onAdd={onAdd}
-       handleSave={handleSave}
-       isCompleted={todo? todo.completed : false} 
+        className={textClass}
+        displayType='block'
+        placeholder='What do you want to do?'
+        editable={isTextEditable}
+        text={todo? todo.text : ''}
+        updateTextState={updateDisplayText}
+        onAdd={onAdd}
+        handleSave={handleSave}
+        isCompleted={todo? todo.completed : false} 
       />
 
       {(cardState !== 'empty') &&
