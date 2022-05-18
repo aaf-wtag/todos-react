@@ -233,18 +233,21 @@ const App = () => {
                   className="allButton"
                   text="All" 
                   textClass="allText" 
+                  disabled={isTodoListEmpty}
                   onClick={() => setFilterType('all')}
                 />
                 <Button
                   className="incompleteButton"
                   text="Incomplete" 
                   textClass="incompleteText" 
+                  disabled={isTodoListEmpty}
                   onClick={() => setFilterType('incomplete')}
                 />
                 <Button
                   className="completeButton"
                   text="Complete" 
                   textClass="completeText" 
+                  disabled={isTodoListEmpty}
                   onClick={() => setFilterType('complete')}
                 />
                 </div>
