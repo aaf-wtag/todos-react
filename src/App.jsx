@@ -274,7 +274,7 @@ const App = () => {
               {todoCardsList}
             </ul>
             <footer className='todosDisplayController'>
-              {(loadMorePresent && !isTodoListEmpty) && (
+              {(loadMorePresent && !isTodoListEmpty && (todos.length > dataIncrement)) && (
                 <Button 
                   className='loadMore'
                   text='Load More'
@@ -292,7 +292,7 @@ const App = () => {
                   }}
                 />
               )}
-              {(!loadMorePresent && !isTodoListEmpty) && (
+              {(!loadMorePresent && !isTodoListEmpty && (todos.length > dataIncrement)) && (
                 <Button 
                   className='seeLess'
                   text='See Less'
