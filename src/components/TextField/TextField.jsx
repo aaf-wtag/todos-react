@@ -1,11 +1,7 @@
-import React, { useState } from 'react';
-
-const TextField = ({className, displayType, placeholder, editable, text, updateDisplayText, isCompleted}) => {
-  const [textValue, setTextValue] = useState(text? text : '');
+const TextField = ({className, displayText, setDisplayText, displayType, placeholder, editable, text, onAdd, handleSave, isCompleted}) => {
 
   const handleChange = (e) => {
-    setTextValue(prev => e.target.value);
-    updateDisplayText(e.target.value);
+    setDisplayText(e.target.value.trim());
   } 
 
   return (editable ?  
@@ -13,8 +9,21 @@ const TextField = ({className, displayType, placeholder, editable, text, updateD
         className={className}
         display={displayType}
         placeholder={placeholder}
+        autoFocus
+        onFocus={(e) => {
+          const val = e.target.value;
+          e.target.value = '';
+          e.target.value = val;
+        }}
         onChange={handleChange}
-        value={textValue}
+        onKeyPress={(e) => {
+          if (e.key === 'Enter'){
+            e.preventDefault();
+            if (!text) onAdd();
+            else handleSave();
+          }
+        }}
+        value={displayText}
       /> ):
     (<p className={isCompleted ? ' completedText' : className}>{text}</p>) 
   );  
