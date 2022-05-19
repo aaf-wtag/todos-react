@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import  React, { useState, useEffect } from 'react';
 import './App.css';
 import todosLogo from './images/todos_logo.svg';
 import Icon from './components/Icon';
@@ -7,6 +7,8 @@ import Toast from './components/Toast';
 import Spinner from './components/Spinner';
 import TodoContainer from './components/TodoContainer';
 import supabase from './supabaseClient';
+
+export const AppContext = React.createContext();
 
 const App = () => {
   const [hideMainScreen, setHideMainScreen] = useState(true);
@@ -71,7 +73,7 @@ const App = () => {
 
   useEffect( () => { 
     loadTodos();
-  }, [searchText, filterType]);
+  }, [searchText, filterType]); // ES Lint warning: React Hook useEffect has a missing dependency: 'loadTodos'
 
   const createToast = (isDBCallSuccessful) => {
     const toast = {
@@ -114,12 +116,13 @@ const App = () => {
       
       { !hideMainScreen && (
         <div className={`mainScreen`}>
-          <Header 
-            searchFieldOn={searchFieldOn} 
-            setSearchFieldOn={setSearchFieldOn}
-            searchText={searchText}
-            setSearchText={setSearchText}
-          />
+          <AppContext.Provider value={{
+            searchFieldOn,
+            setSearchFieldOn,
+            setSearchText,
+          }}>
+            <Header />
+          </AppContext.Provider>
 
           <div className="toastContainer">
             <ul className='toastList'>
@@ -127,22 +130,24 @@ const App = () => {
             </ul>
           </div>
 
-          <TodoContainer 
-            todos={todos}
-            setTodos={setTodos}
-            showMainBodySpinner={showMainBodySpinner}
-            setShowMainBodySpinner={setShowMainBodySpinner}
-            numberOfTodosToShow={numberOfTodosToShow}
-            setNumberOfTodosToShow={setNumberOfTodosToShow}
-            isTodoListEmpty={isTodoListEmpty}
-            setIsTodoListEmpty={setIsTodoListEmpty}
-            loadMorePresent={loadMorePresent}
-            setLoadMorePresent={setLoadMorePresent}
-            dataIncrement={dataIncrement}
-            setFilterType={setFilterType}
-            setToasts={setToasts}
-            createToast={createToast}
-          />
+          <AppContext.Provider value = {{todos,
+            setTodos,
+            showMainBodySpinner,
+            setShowMainBodySpinner,
+            numberOfTodosToShow,
+            setNumberOfTodosToShow,
+            isTodoListEmpty,
+            setIsTodoListEmpty,
+            loadMorePresent,
+            setLoadMorePresent,
+            dataIncrement,
+            setFilterType,
+            setToasts,
+            createToast,}}
+          >
+            <TodoContainer/>
+          </AppContext.Provider>
+      
           {showMainBodySpinner && (
             <Spinner 
               className='mainSpinnerContainer'

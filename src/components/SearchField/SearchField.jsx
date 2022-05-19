@@ -1,7 +1,9 @@
-import React, { useEffect } from 'react'
+import React, { useContext } from 'react'
+import { AppContext } from '../../App';
 
-const SearchField = ({ className, placeholder, setSearchText }) => {
-
+const SearchField = ({ className, placeholder }) => {
+  const {setSearchText} = useContext(AppContext);
+  
   const debounce = (fn, delay) => {
     let timer;
   

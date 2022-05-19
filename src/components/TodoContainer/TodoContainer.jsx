@@ -1,5 +1,5 @@
 import React from 'react';
-import { useState, useEffect } from 'react';
+import { useState, useContext } from 'react';
 import createImg from '../../images/create.svg';
 import emptyImg from '../../images/empty.svg';
 import Tag from '../Tag';
@@ -7,10 +7,12 @@ import Button from '..//Button';
 import Icon from '../Icon';
 import TodoCard from '../TodoCard';
 import supabase from "../../supabaseClient";
+import {AppContext} from '../../App'
 
-const TodoContainer = ({ todos, setTodos, showMainBodySpinner, setShowMainBodySpinner,
-  setToasts, createToast, numberOfTodosToShow, setNumberOfTodosToShow, isTodoListEmpty, setIsTodoListEmpty, 
-  setFilterType, loadMorePresent, setLoadMorePresent, dataIncrement }) => {
+const TodoContainer = () => {
+  const { todos, setTodos, showMainBodySpinner, setShowMainBodySpinner,
+    createToast, numberOfTodosToShow, setNumberOfTodosToShow, isTodoListEmpty, setIsTodoListEmpty, 
+    setFilterType, loadMorePresent, setLoadMorePresent, dataIncrement } = useContext(AppContext);
 
   const [isEmptyCardCreated, setIsEmptyCardCreated] = useState(false);
 
@@ -85,11 +87,8 @@ const TodoContainer = ({ todos, setTodos, showMainBodySpinner, setShowMainBodySp
         key = {todo.id}
         todo = {todo}
         cardState = {determineState(todo.saved, todo.completed)}
-        setTodos = {setTodos}
         updateDataInTodos = {updateDataInTodos}
         handleDelete = {handleDelete}
-        createToast={createToast}
-        setToasts={setToasts}
       />
     )
   );
@@ -154,7 +153,6 @@ const TodoContainer = ({ todos, setTodos, showMainBodySpinner, setShowMainBodySp
             handleAdd={handleAdd}
             handleDelete={handleDelete}
             setIsEmptyCardCreated={setIsEmptyCardCreated}
-            createToast={createToast}
           />
         )}
         {todoCardsList}

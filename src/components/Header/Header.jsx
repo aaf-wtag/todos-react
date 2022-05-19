@@ -1,11 +1,14 @@
-import { useState } from 'react';
+import { useContext } from 'react';
 import React from 'react';
 import Button from '../Button';
 import SearchField from '../SearchField';
 import todosLogo from '../../images/todos_logo.svg';
 import searchIcon from '../../images/search.svg';
+import { AppContext } from '../../App';
 
-const Header = ({searchFieldOn, setSearchFieldOn, searchText, setSearchText}) => {
+const Header = () => {
+  const {searchFieldOn, setSearchFieldOn, setSearchText} = useContext(AppContext);
+
   const handleToggleSearchField = () => {
     setSearchFieldOn(!searchFieldOn);
     setSearchText('');
@@ -27,8 +30,6 @@ const Header = ({searchFieldOn, setSearchFieldOn, searchText, setSearchText}) =>
           <SearchField
             className='searchField'
             placeholder="What are you looking for?"
-            searchText={searchText}
-            setSearchText={setSearchText}
          />)
         )}
         

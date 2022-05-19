@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { useState } from 'react';
 import Button from '../Button';
 import TextField from '../TextField';
@@ -8,10 +8,12 @@ import doneImg from '../../images/done.svg';
 import editImg from '../../images/edit.svg';
 import supabase from '../../supabaseClient';
 import Spinner from '../Spinner';
-
+import { AppContext } from '../../App';
 
 const TodoCard = ({ todo, cardState, handleAdd, handleDelete, 
-  updateDataInTodos, setIsEmptyCardCreated, createToast}) => {
+  updateDataInTodos, setIsEmptyCardCreated}) => {
+    
+  const {createToast} = useContext(AppContext);
   const isTextEditable = (cardState === 'empty' || cardState === 'editing');
   const textClass = (isTextEditable) ? 'inputText' : 'uneditableText';
   
@@ -38,10 +40,6 @@ const TodoCard = ({ todo, cardState, handleAdd, handleDelete,
     const [year, month, day] = dateString.split("T")[0].split("-");
     return `Created At: ${day}.${month}.${year.substring(2, 4)}`;
   }
-
-  const updateDisplayText = (updatedText) => {
-    setDisplayText(updatedText);
-  } 
 
   const onAdd = () => {
     setisAddDisabled(true);
@@ -113,19 +111,21 @@ const TodoCard = ({ todo, cardState, handleAdd, handleDelete,
   }
 
   const handleSave = async() => {
-    setShowCardSpinner(true);
-    const updatedState = await updateText(todo.id, displayText);
-    if (updatedState.error) createToast(false);
-    else {
-      createToast(true);
-      const { data, error } = await updateSavedState(todo.id, true);
-      if (error) createToast(false);
+    if (displayText) {
+      setShowCardSpinner (true);
+      const updatedState = await updateText(todo.id, displayText);
+      if (updatedState.error) createToast(false);
       else {
         createToast(true);
-        updateDataInTodos(data);
+        const { data, error } = await updateSavedState(todo.id, true);
+        if (error) createToast(false);
+        else {
+          createToast(true);
+          updateDataInTodos(data);
+        }
       }
+      setShowCardSpinner(false);
     }
-    setShowCardSpinner(false);
   }
 
   const onDelete = () => {
@@ -144,7 +144,8 @@ const TodoCard = ({ todo, cardState, handleAdd, handleDelete,
         placeholder='What do you want to do?'
         editable={isTextEditable}
         text={todo? todo.text : ''}
-        updateTextState={updateDisplayText}
+        displayText={displayText}
+        setDisplayText={setDisplayText}
         onAdd={onAdd}
         handleSave={handleSave}
         isCompleted={todo? todo.completed : false} 
